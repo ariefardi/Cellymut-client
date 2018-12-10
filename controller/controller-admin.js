@@ -1,6 +1,9 @@
 const {Admin}  = require('../models')
+const {secret_key} = require('../config/config')
 const jwt = require('jsonwebtoken')
 const moment = require('moment')
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const { createRandomSalt, createPassword} = require('../crypto')
 
 class Controller {
@@ -41,14 +44,14 @@ class Controller {
         let password = createPassword(req.body.password,salt)
         let created_at = moment().unix()
         let updated_at = moment().unix()
-        User.findOrCreate({
+        Admin.findOrCreate({
             where : {
                 username: username
             },
             defaults: {
                 password,
                 created_at,
-                updated_at
+                updated_at,
             }
         })
             .spread((admin , created) => {
@@ -66,26 +69,86 @@ class Controller {
                 }
             })
     }
-    static updateAdmin
+    static updateAdmin (req, res) {
+        let id = req.params.id
+        let username = req.body.username
+        let salt = createRandomSalt()
+        let password = createPassword(req.body.password, salt)
+        let updated_at = moment().unix()
+
+        Admin.update({
+            username,
+            password,
+            updated_at
+        }, {
+            where: {
+                id: {
+                    [Op.eq] : id
+                }
+            }
+        })
+            .then(()=> {
+                res.json({
+                    msg: "berhasil update admin!",
+                })
+            })
+            .catch(err=> {
+                res.json({
+                    msg: "Gagal Update admin!",
+                    err
+                })
+            })
+    }
+
+    static deleteAdmin (req, res) {
+        let id = req.params.id
+        Admin.destroy({
+            where : {
+                id: {
+                    [Op.eq] : id
+                }
+            }
+        })
+            .then((data)=> {
+                if (data) {
+                    res.json({
+                        data,
+                        msg: "berhasil menghapus admin dengan id "+id
+                    })
+                }
+                else {
+                    res.json({
+                        msg: "Tidak ada data yang terhapus"
+                    })
+                }
+            })
+            .catch((err)=> {
+                res.json({
+                    msg: 'gagal menghapus admin',
+                    err
+                })
+            })
+    }
 
     static login (req, res) {
         let username = req.body.username
         let password = req.body.password
-        User.findOne({
+        Admin.findOne({
             where : {
                 username
             }
         })
-            .then((user)=> {
-                if (user) {
-                    let decipherHash = user.password.split('.')
+            .then((admin)=> {
+                if (admin) {
+                    let decipherHash = admin.password.split('.')
                     let salt = decipherHash[1]
                     let isPassword = createPassword(password, salt)
-                    let passUser = user.password
+                    let passUser = admin.password
                     if (isPassword===passUser )  {
                         const token = jwt.sign({
-                            id: user.id,
-                            username: user.username,
+                            id: admin.id,
+                            username: admin.username,
+                            role_admin: admin.role_admin
                         }, secret_key)
                         res.json({
                             message: "Login Berhasil!!",
@@ -105,6 +168,7 @@ class Controller {
                 }
             })
             .catch(err=> {
+                console.log(err)
                 res.json({
                     message: "Error Login",
                     err

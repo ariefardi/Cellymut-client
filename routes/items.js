@@ -8,4 +8,7 @@ router.get('/:id', Controller.getOneItem)
 
 router.post('/add', Middleware.checkToken, Controller.addItem)
 
+router.put('/update/:id', Middleware.checkToken, Controller.updateItem)
+router.put('/change-status/:id', Middleware.checkToken, Controller.changeStatusItem)
+
 module.exports = router;

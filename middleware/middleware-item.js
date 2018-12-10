@@ -4,7 +4,7 @@ const {secret_key} = require('../config/config.json')
 class Middleware {
     static checkToken (req, res, next) {
         let decoded = jwt.verify(req.headers.token, secret_key)
-        if (decoded.email) {
+        if (decoded.role_admin) {
             next()
         }
         else {
