@@ -43,6 +43,65 @@ class Controller {
             })
 
     }
+
+    static fbSignIn (req, res) {
+        let first_name = req.body.first_name
+        let last_name = req.body.last_name
+        let email = req.body.email
+        let password = req.body.password
+        let created_at = moment().unix()
+        let updated_at = moment().unix()
+        User.findOne({
+            where: {
+                email
+            }
+        })
+            .then(user=> {
+                if (user) {
+                    const token = jwt.sign({
+                        id: user.id,
+                        email
+                    }, secret_key)
+                    res.json({
+                        token,
+                        msg: 'Login facebook berhasil!'
+                    })
+                }
+                else {
+                    User.create({
+                        first_name,
+                        last_name,
+                        email,
+                        password,
+                        created_at,
+                        updated_at,
+                    })
+                        .then(()=> {
+                            const token = jwt.sign({
+                                id: user.id,
+                                email
+                            }, secret_key)
+                            res.json({
+                                msg: "Berhasil membuat user baru baru dengan data facebook!",
+                                token
+                            })
+                        })
+                        .catch(err=> {
+                            console.log(err)
+                            res.json({
+                                msg: "gagal menambahkan user baru dengan data facebook",
+                                err
+                            })
+                        })
+                }
+            })
+            .catch(err=> {
+                res.json({
+                    msg: 'Login facebook gagal!',
+                    err
+                })
+            })
+    }
     static login (req, res) {
         let email = req.body.email
         let password = req.body.password

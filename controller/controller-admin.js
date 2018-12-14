@@ -152,7 +152,8 @@ class Controller {
                         }, secret_key)
                         res.json({
                             message: "Login Berhasil!!",
-                            token
+                            token,
+                            admin
                         })
                     }
                     else {

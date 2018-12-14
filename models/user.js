@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
       country: DataTypes.STRING,
       provinsi: DataTypes.STRING,
       postal_code: DataTypes.INTEGER
-  }, {
-
-  });
+  }, {});
   User.associate = function(models) {
     // associations can be defined here
+      User.belongsToMany(models.Item,{through: 'Transaction'})
+      User.belongsToMany(models.Item, {through: 'Cart'} )
   };
   return User;
 };

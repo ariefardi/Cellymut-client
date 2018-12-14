@@ -29,19 +29,89 @@ class Controller {
                 })
             })
     }
+    static getParents (req, res) {
+        Item.findAll({
+            where: {
+                parent_id : {
+                    [Op.eq] : -1
+                }
+            }
+        })
+            .then((parents)=> {
+                res.json({
+                    msg: "get all parents",
+                    parents
+                })
+            })
+    }
+    static getBySize (req, res) {
+        let size = req.headers.size
+        Item.findAll({
+            where: {
+                size: size
+            }
+        })
+            .then(items=> {
+                res.json({
+                    msg: "getting items by size" ,
+                    items
+                })
+            })
+            .catch(err=> {
+                console.log(err)
+                res.json({
+                    err
+                })
+            })
+    }
+    static getBySizeAndColor (req, res) {
+        let size = req.headers.size
+        let color = req.headers.color
+        Item.findOne({
+            where: {
+                size,
+                color
+            }
+        })
+            .then(item=> {
+                res.json({
+                    msg: "get item  by color and size",
+                    item
+                })
+            })
+            .catch(err=> {
+                res.json({
+                    err
+                })
+            })
+    }
 
     static addItem (req, res) {
-        let item_name = req.body.item_name
+        let item_name = ''
         let item_price = req.body.item_price
         let item_stocks = req.body.item_stocks
         let item_image = req.body.item_image
+        let image_name = req.body.image_name
+        let size = req.body.size
+        let color = req.body.color
+        let parent_id = req.body.parent_id
         let created_at = moment().unix()
         let updated_at = moment().unix()
+        if (parent_id===1) {
+            item_name = 'Monopolly Cellymut'
+        }
+        else {
+            item_name = 'Ular Tangga Cellymut'
+        }
         Item.create({
             item_name,
             item_price,
             item_stocks,
+            image_name,
             item_image,
+            size,
+            color,
+            parent_id,
             created_at,
             updated_at
         })
