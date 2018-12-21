@@ -9,7 +9,9 @@ module.exports = (sequelize, DataTypes) => {
       ItemId: DataTypes.INTEGER,
       quantity: DataTypes.INTEGER,
       total: DataTypes.INTEGER,
-      status_transaction: DataTypes.INTEGER
+      status_transaction: DataTypes.INTEGER,
+      type_courier: DataTypes.STRING,
+      cost_courier: DataTypes.INTEGER
   }, {});
   Transaction.associate = function(models) {
     // associations can be defined here

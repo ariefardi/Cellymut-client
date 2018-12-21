@@ -1,9 +1,9 @@
 
 const {Cart, User, Item} = require('../models')
-const moment = require('moment')
+const axios = require('axios')
 
 const jwt = require('jsonwebtoken')
-let {secret_key} = require('../config/config.json')
+let {secret_key, key} = require('../config/config.json')
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -82,8 +82,8 @@ class Controller {
         console.log(decoded)
         let ItemId = req.params.item_id
         let name = req.body.name
-        let createdAt = moment().unix()
-        let updatedAt = moment().unix()
+        let createdAt = new Date()
+        let updatedAt = new Date()
         Cart.findOrCreate({
             where: {
                 UserId: {
@@ -109,13 +109,18 @@ class Controller {
                     })
                 }
                 else {
+                    console.log(cart)
                     cart.quantity+=1
                     Cart.update({
-                        quantity: cart.quantity
+                        quantity: cart.quantity,
+                        name
                     }, {
                         where: {
-                            id: {
-                                [Op.eq]: cart.id
+                            UserId: {
+                                [Op.eq]: UserId
+                            },
+                            ItemId: {
+                                [Op.eq]: ItemId
                             }
                         }
                     })
@@ -137,16 +142,17 @@ class Controller {
     }
 
     static addQuantity (req, res) {
-        let decoded = jwt.verify(req.headers.token, secret_key)
-        // let UserId = decoded.id
-        // let ItemId = req.body.ItemId
-        let updatedAt = moment().unix()
-        let id = req.params.cart_id
+        let UserId = req.body.UserId
+        let ItemId = req.body.ItemId
+        let updatedAt = new Date()
         Cart.findOne({
             where: {
-                id: {
-                    [Op.eq]: id
+                UserId: {
+                    [Op.eq]: UserId
                 },
+                ItemId: {
+                    [Op.eq]: ItemId
+                }
             }
         })
             .then((cart)=> {
@@ -156,8 +162,11 @@ class Controller {
                     updatedAt
                 },{
                     where: {
-                        id: {
-                            [Op.eq]: id
+                        UserId: {
+                            [Op.eq]: UserId
+                        },
+                        ItemId: {
+                            [Op.eq]: ItemId
                         }
                     }
                 })
@@ -180,19 +189,128 @@ class Controller {
                 })
             })
     }
+    static decQuantity (req, res) {
+        let UserId = req.body.UserId
+        let ItemId = req.body.ItemId
+        let updatedAt = new Date()
+        Cart.findOne({
+            where: {
+                UserId: {
+                    [Op.eq]: UserId
+                },
+                ItemId: {
+                    [Op.eq]: ItemId
+                }
+            }
+        })
+            .then((cart)=> {
+                cart.quantity-=1
+                Cart.update({
+                    quantity: cart.quantity,
+                    updatedAt
+                },{
+                    where: {
+                        UserId: {
+                            [Op.eq]: UserId
+                        },
+                        ItemId: {
+                            [Op.eq]: ItemId
+                        }
+                    }
+                })
+                    .then(()=> {
+                        res.json({
+                            msg: "Berhasil mengurangi quantity",
+                            cart
+                        })
+                    })
+                    .catch(err=> {
+                        console.log(err)
+                        res.json({
+                            err
+                        })
+                    })
+            })
+            .catch(err=> {
+                res.json({
+                    err
+                })
+            })
+    }
 
     static deleteCart (req, res) {
-        let id = req.params.cart_id
+        let UserId = req.params.UserId
+        let ItemId = req.params.ItemId
         Cart.destroy({
             where: {
-                id: {
-                    [Op.eq]: id
+                UserId: {
+                    [Op.eq]: UserId
+                },
+                ItemId: {
+                    [Op.eq]: ItemId
+                }
+            }
+        })
+            .then((deleted)=> {
+                res.json({
+                    msg: "berhasil menghapus cart!",
+                    deleted
+                })
+            })
+            .catch(err=> {
+                console.log(err)
+                res.json({
+                    err
+                })
+            })
+    }
+
+    static goToTrans (req, res) {
+        let UserId = req.params.UserId
+        let ItemId = req.params.ItemId
+        Cart.update({
+            status_cart: -1
+        }, {
+            where: {
+                UserId: {
+                    [Op.eq]: UserId
+                },
+                ItemId: {
+                    [Op.eq]: ItemId
                 }
             }
         })
             .then(()=> {
                 res.json({
-                    msg: "berhasil menghapus cart!"
+                    msg: "berhasil menganti status cart"
+                })
+            })
+            .catch(err=> {
+                res.json({
+                    err
+                })
+            })
+    }
+
+    static fetchingRajaOngkir (req, res) {
+        let destination = req.body.destination
+        let weight = 4000
+        let courier = req.body.courier
+        let origin = 151
+        axios.post('https://api.rajaongkir.com/starter/cost',{
+            origin,
+            destination,
+            courier,
+            weight
+        },{
+            headers : {
+                key
+            }
+        })
+            .then(({data})=> {
+                res.json({
+                    msg: 'fetching raja ongkir',
+                    data
                 })
             })
             .catch(err=> {

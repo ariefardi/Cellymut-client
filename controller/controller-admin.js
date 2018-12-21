@@ -1,7 +1,6 @@
 const {Admin}  = require('../models')
 const {secret_key} = require('../config/config')
 const jwt = require('jsonwebtoken')
-const moment = require('moment')
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const { createRandomSalt, createPassword} = require('../crypto')
@@ -42,8 +41,8 @@ class Controller {
         let username = req.body.username
         let salt = createRandomSalt()
         let password = createPassword(req.body.password,salt)
-        let created_at = moment().unix()
-        let updated_at = moment().unix()
+        let created_at = new Date()
+        let updated_at = new Date()
         Admin.findOrCreate({
             where : {
                 username: username
@@ -74,7 +73,7 @@ class Controller {
         let username = req.body.username
         let salt = createRandomSalt()
         let password = createPassword(req.body.password, salt)
-        let updated_at = moment().unix()
+        let updated_at = new Date()
 
         Admin.update({
             username,

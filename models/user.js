@@ -11,11 +11,12 @@ module.exports = (sequelize, DataTypes) => {
       type_home: DataTypes.STRING,
       country: DataTypes.STRING,
       provinsi: DataTypes.STRING,
-      postal_code: DataTypes.INTEGER
+      postal_code: DataTypes.INTEGER,
+      image_profile: DataTypes.STRING
   }, {});
   User.associate = function(models) {
     // associations can be defined here
-      User.belongsToMany(models.Item,{through: 'Transaction'})
+      User.belongsToMany(models.Item, {through: 'Transaction'} )
       User.belongsToMany(models.Item, {through: 'Cart'} )
   };
   return User;

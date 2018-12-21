@@ -1,5 +1,4 @@
 const {Item} = require('../models')
-const moment = require('moment')
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -46,9 +45,11 @@ class Controller {
     }
     static getBySize (req, res) {
         let size = req.headers.size
+        let item_name = req.headers.item_name
         Item.findAll({
             where: {
-                size: size
+                size: size,
+                item_name
             }
         })
             .then(items=> {
@@ -95,38 +96,85 @@ class Controller {
         let size = req.body.size
         let color = req.body.color
         let parent_id = req.body.parent_id
-        let created_at = moment().unix()
-        let updated_at = moment().unix()
+        let createdAt = new Date()
+        let updatedAt = new Date()
         if (parent_id===1) {
             item_name = 'Monopolly Cellymut'
         }
         else {
             item_name = 'Ular Tangga Cellymut'
         }
-        Item.create({
-            item_name,
-            item_price,
-            item_stocks,
-            image_name,
-            item_image,
-            size,
-            color,
-            parent_id,
-            created_at,
-            updated_at
+        Item.findOrCreate({
+            where: {
+                size,
+                color,
+                item_name
+            },
+            defaults: {
+                item_name,
+                item_price,
+                item_stocks,
+                image_name,
+                item_image,
+                size,
+                color,
+                parent_id,
+                createdAt: updatedAt,
+                updatedAt
+            }
         })
-            .then(()=> {
-                res.json({
-                    message: "berhasil menambahkan item baru",
+            .spread((item, created)=> {
+                if (created) {
+                    let obj = {
+                        item_name,
+                        item_price,
+                        item_stocks,
+                        image_name,
+                        item_image,
+                        size,
+                        color,
+                        parent_id,
+                        createdAt,
+                        updatedAt
+                    }
+                    Controller.addStock(obj)
+                    res.json({
+                        msg: "Berhasil menambahkan item baru",
+                        status: 1
+                    })
+                }
+                else {
+                    res.json({
+                        msg: "Ukuran dan Warna telah ada!",
+                        status: 0
+                    })
+                }
+            })
+    }
+
+    static addStock(obj) {
+        Item.findOne({
+            where: {
+                item_name: obj.item_name,
+                parent_id: -1
+            }
+        })
+            .then(item=> {
+                item.item_stocks+=obj.item_stocks
+                Item.update({
+                    item_stocks: item.item_stocks
+                }, {
+                    where: {
+                        item_name: obj.item_name,
+                        parent_id: -1
+                    }
                 })
             })
             .catch(err=> {
-                res.json({
-                    message: "gagal menambahkan item baru",
-                    err
-                })
+                console.log(err)
             })
     }
+
 
     static updateItem (req, res) {
         let id = req.params.id
@@ -134,7 +182,7 @@ class Controller {
         let item_price = req.body.item_price
         let item_stocks = req.body.item_stocks
         let item_image = req.body.item_image
-        let updated_at = moment().unix()
+        let updated_at = new Date()
         Item.update({
             item_name,
             item_price,

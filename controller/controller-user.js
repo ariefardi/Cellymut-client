@@ -1,4 +1,3 @@
-const moment = require('moment')
 const jwt = require('jsonwebtoken')
 const {secret_key} = require('../config/config.json')
 const {User} = require('../models')
@@ -22,7 +21,8 @@ class Controller {
             })
     }
     static getOneUsers (req, res) {
-        let id = req.params.id
+        let decoded = jwt.verify(req.headers.token, secret_key)
+        let id = decoded.id
         console.log(id,'id')
         User.findById(id)
             .then((user)=> {
@@ -38,54 +38,81 @@ class Controller {
                 })
             })
     }
+    static changeImage (req, res) {
+        let decoded = jwt.verify(req.headers.token, secret_key)
+        let id = decoded.id
+        User.update({
+            image_profile: req.body.image_profile
+        }, {
+            where: {
+                id: {
+                    [Op.eq]: id
+                }
+            }
+        })
+            .then(()=> {
+                res.json({
+                    msg: "berhasil change image"
+                })
+            })
+            .catch(err=> {
+                res.json({
+                    err
+                })
+            })
+    }
 
     static updateUser (req, res) {
         let decoded = jwt.verify(req.headers.token, secret_key)
-        let id = req.params.id
-        let email = decoded.email
-        let password = req.body.password
-        let newPass = req.body.newPass
+        let id = decoded.id
+        let email = req.body.email
+        let phone_number = req.body.phone_number
         let address = req.body.address
         let type_home = req.body.type_home
         let country = req.body.country
         let provinsi = req.body.provinsi
         let postal_code = req.body.postal_code
-        let updated_at = moment().unix()
-        console.log(req.body)
-        if (!password) {
-            console.log(req.body.city, 'ini city')
-            User.update({
-                email,
-                address,
-                type_home,
-                city: req.body.city,
-                country,
-                provinsi,
-                postal_code,
-                updated_at
-            }, {
-                where: {
-                    id: {
-                        [Op.eq] : id,
-                    }
+        let updated_at = new Date()
+        User.update({
+            email,
+            phone_number,
+            address,
+            type_home,
+            country,
+            provinsi,
+            postal_code,
+            updatedAt: updated_at
+        }, {
+            where : {
+                id: {
+                    [Op.eq]: id
                 }
+            }
+        })
+            .then(()=> {
+                res.json({
+                    msg: 'Berhasil update profile',
+                })
             })
-                .then(()=> {
-                    res.json({
-                        message: "Berhasil Update"
-                    })
+            .catch(err=> {
+                console.log(err)
+                res.json({
+                    err
                 })
-                .catch(err=> {
-                    res.json({
-                        message: "Gagal Update",
-                        err
-                    })
-                })
-        }
-        else {
+            })
+    }
+
+    static updateUserPassword (req, res) {
+        let decoded = jwt.verify(req.headers.token, secret_key)
+        let id = decoded.id
+        let password = req.body.password
+        let newPass = req.body.newPass
+        let updated_at = new Date()
             User.findOne({
                 where: {
-                    email
+                    id: {
+                        [Op.eq]: id
+                    }
                 }
             })
                 .then((user)=> {
@@ -96,15 +123,8 @@ class Controller {
                     if (isPassword===passUser)  {
                         let newPassword = createPassword(newPass, salt)
                         User.update({
-                            email,
-                            address,
-                            type_home,
-                            city: req.body.city,
-                            country,
-                            provinsi,
-                            postal_code,
-                            updated_at,
-                            password: newPassword
+                            password: newPassword,
+                            updatedAt: updated_at
                         }, {
                             where: {
                                 id: {
@@ -114,12 +134,13 @@ class Controller {
                         })
                             .then(()=> {
                                 res.json({
-                                    message: "Berhasil Update Ganti Password"
+                                    msg: "Berhasil Update Ganti Password",
+                                    status: 1
                                 })
                             })
                             .catch(err=> {
                                 res.json({
-                                    message: "Gagal Update Password",
+                                    msg: "Gagal Update Password",
                                     err
                                 })
                             })
@@ -127,12 +148,11 @@ class Controller {
                     }
                     else {
                         res.json({
-                            message: "Password salah"
+                            msg: "Password salah",
+                            status: 0
                         })
                     }
                 })
-        }
-
     }
 }
 

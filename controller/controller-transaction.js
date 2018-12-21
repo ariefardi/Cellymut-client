@@ -1,5 +1,4 @@
 const {Transaction, Item, User} = require('../models')
-const moment = require('moment')
 const {secret_key} = require('../config/config')
 const { createRandomId } = require('../crypto')
 const jwt = require('jsonwebtoken')
@@ -10,12 +9,14 @@ class Controller {
 
     static getTransactions (req, res) {
         Transaction.findAll({
-            include : {
-                model: User,
-                include: {
+            include: [
+                {
                     model: Item
+                },
+                {
+                    model: User
                 }
-            },
+            ],
         })
             .then((trans)=> {
                 res.json({
@@ -53,9 +54,14 @@ class Controller {
         let decoded = jwt.verify(req.headers.token, secret_key)
         let UserId = decoded.id
         Transaction.findAll({
-            include: {
-                model: Item
-            },
+            include: [
+                {
+                    model: Item
+                },
+                {
+                    model: User
+                }
+            ],
             where: {
                 UserId: {
                     [Op.eq] : UserId
@@ -79,16 +85,19 @@ class Controller {
 
 
     static buyTransaction (req, res) {
-        let decoded = jwt.verify(req.headers.token, secret_key)
-        let UserId = decoded.id
+        // let decoded = jwt.verify(req.headers.token, secret_key)
+        let UserId = req.body.UserId
         let ItemId = req.params.item_id
         let id = createRandomId()
         let quantity = Number(req.body.quantity)
         let color = req.body.color
         let price = Number(req.body.price)
-        let total = price*quantity
-        let createdAt = moment().unix()
-        let updatedAt = moment().unix()
+        let cost = Number(req.body.cost)
+        let cost_courier = cost
+        let type_courier = req.body.type_courier
+        let total = (price*quantity) + cost
+        let createdAt = new Date()
+        let updatedAt = new Date()
 
         Transaction.create({
             id,
@@ -97,10 +106,25 @@ class Controller {
             quantity,
             color,
             total,
+            cost_courier,
+            type_courier,
             createdAt,
             updatedAt
         })
             .then(()=> {
+                let obj = {
+                    id,
+                    UserId,
+                    ItemId,
+                    quantity,
+                    color,
+                    total,
+                    cost_courier,
+                    type_courier,
+                    createdAt,
+                    updatedAt
+                }
+                Controller.decStock(obj)
                 res.json({
                     msg: "berhasil menambahkan transaksi baru!"
                 })
@@ -110,6 +134,32 @@ class Controller {
                     msg: "error menambahkan transaksi",
                     err
                 })
+            })
+    }
+    static decStock (obj) {
+        Item.findOne({
+            where: {
+                id: obj.ItemId
+            }
+        })
+            .then((item)=> {
+                item.item_stocks -= obj.quantity
+                Item.update({
+                    item_stocks: item.item_stocks
+                },{
+                    where: {
+                        id: obj.ItemId
+                    }
+                })
+                    .then(()=> {
+                        console.log('Berhasil kurangin stocks')
+                    })
+                    .catch(err=> {
+                        console.log(err)
+                    })
+            })
+            .catch(err=> {
+                console.log(err)
             })
     }
 
@@ -145,8 +195,97 @@ class Controller {
             })
     }
 
-    static changeStatusTransactions (req, res) {
+    static async confirmStatusTransactions (req, res) {
+        let id = req.params.trans_id
+        try {
+            let getTrans = await Transaction.findById(id)
+            getTrans.status_transaction+=1
+            let updateTrans = await Transaction.update({
+              status_transaction: getTrans.status_transaction
+            },{
+                where: {
+                    id: {
+                        [Op.eq] : id
+                    }
+                }
+            })
+            res.json({
+                getTrans,
+                updateTrans
+            })
 
+        }
+        catch (e) {
+            console.log(e)
+            res.json({
+                e
+            })
+        }
+    }
+    static async rejectStatusTransactions (req, res) {
+        let id = req.params.trans_id
+        console.log(id)
+        let obj = {
+            id: req.body.ItemId ,
+            quantity: req.body.quantity
+        }
+        console.log(obj)
+        try {
+            let getTrans = await Transaction.findOne({
+                where: {
+                    id: id
+                }
+            })
+            getTrans.status_transaction = -1
+            let updateTrans = await Transaction.update({
+                status_transaction: getTrans.status_transaction
+            },{
+                where: {
+                    id: {
+                        [Op.eq] : id
+                    }
+                }
+            })
+            Controller.restockItem(obj)
+            res.json({
+                getTrans,
+                updateTrans
+            })
+        }
+        catch (e) {
+            res.json({
+                e
+            })
+        }
+    }
+    static restockItem (obj) {
+        Item.findOne({
+            where: {
+                id: obj.id
+            }
+        })
+            .then((item)=> {
+                console.log('ini obj',obj)
+                item.item_stocks+=obj.quantity
+                console.log(item.dataValues)
+                Item.update({
+                    item_stocks: item.item_stocks
+                },{
+                    where: {
+                        id: obj.id
+                    }
+                })
+                    .then((apaan)=> {
+                        console.log('berhasil restock barang', item)
+                        console.log(apaan)
+                    })
+                    .catch(err=> {
+                        console.log(err)
+                    })
+            })
+            .catch(err=> {
+
+            })
     }
 }
 

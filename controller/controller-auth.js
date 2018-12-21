@@ -1,4 +1,3 @@
-const moment = require('moment')
 const jwt = require('jsonwebtoken')
 const {User} = require('../models')
 const { createRandomSalt, createPassword} = require('../crypto')
@@ -12,8 +11,8 @@ class Controller {
 
         let salt = createRandomSalt()
         let password = createPassword(req.body.password,salt)
-        let created_at = moment().unix()
-        let updated_at = moment().unix()
+        let createdAt = new Date()
+        let updatedAt = new Date()
         User.findOrCreate({
             where : {
                 email: email
@@ -22,22 +21,29 @@ class Controller {
                 first_name,
                 last_name,
                 password,
-                created_at,
-                updated_at,
+                createdAt,
+                updatedAt,
                 phone_number
             }
         })
             .spread((user , created) => {
                 console.log(created)
                 if (created) {
+                    const token = jwt.sign({
+                        id: user.id,
+                        email: user.email,
+                    }, secret_key)
                     res.json({
-                        message: "Berhasil register user baru",
-                        user
+                        msg: "Login Berhasil!!",
+                        token,
+                        user,
+                        status: 1
                     })
                 }
                 else {
                     res.json({
                         message: "Email telah digunakan",
+                        status: 0
                     })
                 }
             })
@@ -49,8 +55,8 @@ class Controller {
         let last_name = req.body.last_name
         let email = req.body.email
         let password = req.body.password
-        let created_at = moment().unix()
-        let updated_at = moment().unix()
+        let created_at = new Date()
+        let updated_at = new Date()
         User.findOne({
             where: {
                 email
@@ -122,19 +128,23 @@ class Controller {
                             email: user.email,
                         }, secret_key)
                         res.json({
-                            message: "Login Berhasil!!",
-                            token
+                            msg: "Login Berhasil!!",
+                            token,
+                            user,
+                            status: 1
                         })
                     }
                     else {
                         res.json({
-                            message: "Username/Password salah"
+                            msg: "Username/Password salah",
+                            status: 0
                         })
                     }
                 }
                 else {
                     res.json({
-                        message: "Username/Password salah"
+                        msg: "Username/Password salah",
+                        status: 0
                     })
                 }
             })
