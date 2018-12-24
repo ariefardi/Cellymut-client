@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
       User.belongsToMany(models.Item, {through: 'Transaction'} )
       User.belongsToMany(models.Item, {through: 'Cart'} )
+      User.belongsToMany(models.Item, {through: 'Update'} )
   };
   return User;
 };

@@ -11,6 +11,7 @@ const authRouter = require('./routes/auth');
 const adminsRouter = require('./routes/admin');
 const transactionsRouter = require('./routes/transactions');
 const cartsRouter = require('./routes/carts')
+const updatesRouter = require('./routes/updates')
 const cron = require('./cron')
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/auth', authRouter);
 app.use('/admins', adminsRouter);
 app.use('/transactions', transactionsRouter)
 app.use('/carts', cartsRouter)
+app.use('/updates', updatesRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

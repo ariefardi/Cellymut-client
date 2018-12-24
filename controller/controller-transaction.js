@@ -1,4 +1,4 @@
-const {Transaction, Item, User} = require('../models')
+const {Transaction, Item, User, Update} = require('../models')
 const {secret_key} = require('../config/config')
 const { createRandomId } = require('../crypto')
 const jwt = require('jsonwebtoken')
@@ -96,6 +96,8 @@ class Controller {
         let cost_courier = cost
         let type_courier = req.body.type_courier
         let total = (price*quantity) + cost
+        let alamat_pengiriman = req.body.alamat_pengiriman
+        let phone_number = req.body.phone_number
         let createdAt = new Date()
         let updatedAt = new Date()
 
@@ -108,6 +110,8 @@ class Controller {
             total,
             cost_courier,
             type_courier,
+            alamat_pengiriman,
+            phone_number,
             createdAt,
             updatedAt
         })
@@ -126,7 +130,8 @@ class Controller {
                 }
                 Controller.decStock(obj)
                 res.json({
-                    msg: "berhasil menambahkan transaksi baru!"
+                    msg: "berhasil menambahkan transaksi baru!",
+                    id
                 })
             })
             .catch(err=> {
@@ -209,6 +214,7 @@ class Controller {
                     }
                 }
             })
+            Controller.updateMessageStatus(id, getTrans)
             res.json({
                 getTrans,
                 updateTrans
@@ -222,6 +228,29 @@ class Controller {
             })
         }
     }
+    static updateMessageStatus (trans_id, getTrans) {
+
+        const updatedAt = new Date()
+        const createdAt = new Date()
+        Update.create({
+            UserId: getTrans.UserId,
+            ItemId: getTrans.ItemId,
+            type: getTrans.status_transaction,
+            updatedAt,
+            createdAt,
+            message: 'Pesan Sesuatu',
+            TransactionId: trans_id
+        })
+            .then(()=> {
+                console.log('Berhasil Update Status Message')
+                return 'Berhasil Update Status Message'
+            })
+            .catch(err=> {
+                console.log(err)
+                return err
+            })
+    }
+
     static async rejectStatusTransactions (req, res) {
         let id = req.params.trans_id
         console.log(id)

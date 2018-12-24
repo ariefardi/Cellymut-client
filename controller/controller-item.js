@@ -49,7 +49,10 @@ class Controller {
         Item.findAll({
             where: {
                 size: size,
-                item_name
+                item_name,
+                item_stocks: {
+                    [Op.ne]: 0
+                }
             }
         })
             .then(items=> {

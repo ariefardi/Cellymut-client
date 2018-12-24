@@ -70,6 +70,7 @@ class Controller {
         let address = req.body.address
         let type_home = req.body.type_home
         let country = req.body.country
+        let city = req.body.city
         let provinsi = req.body.provinsi
         let postal_code = req.body.postal_code
         let updated_at = new Date()
@@ -79,6 +80,7 @@ class Controller {
             address,
             type_home,
             country,
+            city,
             provinsi,
             postal_code,
             updatedAt: updated_at
