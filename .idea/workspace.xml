@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ec900e87-d74b-47af-866f-1463c61beec2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/controller/controller-auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/controller/controller-auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -263,12 +263,12 @@
       <workItem from="1544371275247" duration="2723000" />
       <workItem from="1544408672003" duration="55215000" />
       <workItem from="1544765923248" duration="2511000" />
-      <workItem from="1544838383173" duration="59386000" />
+      <workItem from="1544838383173" duration="59847000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="119835000" />
+    <option name="totallyTimeSpent" value="120296000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -281,7 +281,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26037195" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
