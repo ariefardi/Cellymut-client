@@ -70,7 +70,8 @@ class Controller {
                     }, secret_key)
                     res.json({
                         token,
-                        msg: 'Login facebook berhasil!'
+                        msg: 'Login facebook berhasil!',
+                        user
                     })
                 }
                 else {
@@ -89,7 +90,8 @@ class Controller {
                             }, secret_key)
                             res.json({
                                 msg: "Berhasil membuat user baru baru dengan data facebook!",
-                                token
+                                token,
+                                user
                             })
                         })
                         .catch(err=> {
