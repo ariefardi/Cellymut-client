@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ec900e87-d74b-47af-866f-1463c61beec2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="ec900e87-d74b-47af-866f-1463c61beec2" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +74,7 @@
         <entry file="file://$PROJECT_DIR$/cron/index.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1980">
-              <caret line="132" column="2" lean-forward="true" selection-start-line="132" selection-start-column="2" selection-end-line="132" selection-end-column="2" />
+              <caret line="132" column="2" selection-start-line="132" selection-start-column="2" selection-end-line="132" selection-end-column="2" />
             </state>
           </provider>
         </entry>
@@ -103,7 +101,7 @@
         <entry file="file://$PROJECT_DIR$/controller/controller-update.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="371">
-              <caret line="92" column="14" lean-forward="true" selection-start-line="74" selection-start-column="8" selection-end-line="92" selection-end-column="14" />
+              <caret line="92" column="14" selection-start-line="74" selection-start-column="8" selection-end-line="92" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -263,12 +261,12 @@
       <workItem from="1544371275247" duration="2723000" />
       <workItem from="1544408672003" duration="55215000" />
       <workItem from="1544765923248" duration="2511000" />
-      <workItem from="1544838383173" duration="59847000" />
+      <workItem from="1544838383173" duration="60263000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="120296000" />
+    <option name="totallyTimeSpent" value="120712000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -561,14 +559,14 @@
     <entry file="file://$PROJECT_DIR$/controller/controller-update.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="371">
-          <caret line="92" column="14" lean-forward="true" selection-start-line="74" selection-start-column="8" selection-end-line="92" selection-end-column="14" />
+          <caret line="92" column="14" selection-start-line="74" selection-start-column="8" selection-end-line="92" selection-end-column="14" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cron/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1980">
-          <caret line="132" column="2" lean-forward="true" selection-start-line="132" selection-start-column="2" selection-end-line="132" selection-end-column="2" />
+          <caret line="132" column="2" selection-start-line="132" selection-start-column="2" selection-end-line="132" selection-end-column="2" />
         </state>
       </provider>
     </entry>
