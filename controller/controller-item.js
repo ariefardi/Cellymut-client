@@ -46,6 +46,7 @@ class Controller {
     static getBySize (req, res) {
         let size = req.headers.size
         let item_name = req.headers.item_name
+        console.log(req.headers)
         Item.findAll({
             where: {
                 size: size,
@@ -56,6 +57,7 @@ class Controller {
             }
         })
             .then(items=> {
+                console.log(items)
                 res.json({
                     msg: "getting items by size" ,
                     items
@@ -71,6 +73,7 @@ class Controller {
     static getBySizeAndColor (req, res) {
         let size = req.headers.size
         let color = req.headers.color
+        console.log('dont even masuk sini')
         Item.findOne({
             where: {
                 size,
@@ -78,6 +81,7 @@ class Controller {
             }
         })
             .then(item=> {
+                console.log(item,'>>>>>>')
                 res.json({
                     msg: "get item  by color and size",
                     item
@@ -185,13 +189,17 @@ class Controller {
         let item_price = req.body.item_price
         let item_stocks = req.body.item_stocks
         let item_image = req.body.item_image
+        let color = req.body.color
+        let size = req.body.size
         let updated_at = new Date()
         Item.update({
             item_name,
             item_price,
             item_stocks,
             item_image,
-            updated_at
+            updated_at,
+            color,
+            size
         }, {
             where: {
                 id: {
